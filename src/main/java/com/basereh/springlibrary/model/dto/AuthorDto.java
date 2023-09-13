@@ -1,12 +1,13 @@
 package com.basereh.springlibrary.model.dto;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthorDto {
-    private Integer id;
+    private Long id;
     private String firstname;
     private String lastname;
 }

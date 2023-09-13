@@ -1,13 +1,23 @@
 package com.basereh.springlibrary.model;
 
-import lombok.Builder;
-import lombok.Getter;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
 @Getter
-@Builder
+@Builder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "author")
 public class Author {
-    private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @Column(name = "first_name")
     private String firstname;
+
+    @Column(name = "last_name")
     private String lastname;
 
     @Override
