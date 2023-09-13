@@ -1,4 +1,4 @@
-package com.basereh.springlibrary.model.dto;
+package com.basereh.springlibrary.controller.dto;
 
 import lombok.*;
 

@@ -14,10 +14,10 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "first_name")
+    @Column
     private String firstname;
 
-    @Column(name = "last_name")
+    @Column
     private String lastname;
 
     @Override

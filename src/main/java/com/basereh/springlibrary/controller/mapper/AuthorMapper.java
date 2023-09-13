@@ -1,7 +1,7 @@
-package com.basereh.springlibrary.mapper;
+package com.basereh.springlibrary.controller.mapper;
 
 import com.basereh.springlibrary.model.Author;
-import com.basereh.springlibrary.model.dto.AuthorDto;
+import com.basereh.springlibrary.controller.dto.AuthorDto;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

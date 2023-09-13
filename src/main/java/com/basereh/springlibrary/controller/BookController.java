@@ -1,6 +1,6 @@
 package com.basereh.springlibrary.controller;
 
-import com.basereh.springlibrary.model.dto.BookDto;
+import com.basereh.springlibrary.controller.dto.BookDto;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

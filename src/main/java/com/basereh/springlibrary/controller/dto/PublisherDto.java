@@ -1,4 +1,4 @@
-package com.basereh.springlibrary.model.dto;
+package com.basereh.springlibrary.controller.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class PublisherDto {
-    private Integer id;
+    private Long id;
     public String name;
 }

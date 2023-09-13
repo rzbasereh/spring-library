@@ -1,7 +1,7 @@
 package com.basereh.springlibrary.controller;
 
-import com.basereh.springlibrary.mapper.AuthorMapper;
-import com.basereh.springlibrary.model.dto.AuthorDto;
+import com.basereh.springlibrary.controller.mapper.AuthorMapper;
+import com.basereh.springlibrary.controller.dto.AuthorDto;
 import com.basereh.springlibrary.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
