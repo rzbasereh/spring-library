@@ -29,7 +29,7 @@ public class BookService {
         if (prevBook != null) {
             bookRepository.save(prevBook.toBuilder()
                     .name(book.getName())
-                    .author(book.getAuthor())
+                    .authors(book.getAuthors())
                     .publisher(book.getPublisher())
                     .build());
         }

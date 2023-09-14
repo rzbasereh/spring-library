@@ -3,6 +3,9 @@ package com.basereh.springlibrary.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter
 @Builder(toBuilder = true)
@@ -20,8 +23,6 @@ public class Author {
     @Column
     private String lastname;
 
-    @Override
-    public String toString() {
-        return firstname + " " + lastname;
-    }
+    @ManyToMany(mappedBy = "authors")
+    private Set<Book> books = new HashSet<>();
 }

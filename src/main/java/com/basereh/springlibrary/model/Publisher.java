@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Getter
 @Builder(toBuilder = true)
 @Entity
@@ -18,10 +20,8 @@ public class Publisher {
     private Long id;
 
     @Column
-    public String name;
+    private String name;
 
-    @Override
-    public String toString() {
-        return name;
-    }
+    @OneToMany(mappedBy = "publisher")
+    private Set<Book> books;
 }

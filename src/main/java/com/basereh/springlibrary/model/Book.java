@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Getter
 @Builder(toBuilder = true)
 @Entity
@@ -18,18 +20,17 @@ public class Book {
     private Long id;
 
     @Column
-    public String name;
+    private String name;
 
     @ManyToOne
-    @JoinColumn(name="publisher_id", referencedColumnName ="id")
-    public Publisher publisher;
+    @JoinColumn(name="publisher_id")
+    private Publisher publisher;
 
-    @ManyToOne
-    @JoinColumn(name="author_id", referencedColumnName ="id")
-    public Author author;
-
-    @Override
-    public String toString() {
-        return name + "(pub: " + publisher.toString() + " )(author: " + author.toString() + " )";
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "track",
+            joinColumns = {@JoinColumn(name = "book_id")},
+            inverseJoinColumns = {@JoinColumn(name = "author_id")}
+    )
+    private Set<Author> authors;
 }
