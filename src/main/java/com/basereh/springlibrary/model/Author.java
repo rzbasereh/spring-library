@@ -6,13 +6,13 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
+@Entity     // todo comment entity va table kenare ham bashand
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "author")
-public class Author {
+public class Author {       // todo comment serializable
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -24,5 +24,5 @@ public class Author {
     private String lastname;
 
     @ManyToMany(mappedBy = "authors")
-    private Set<Book> books = new HashSet<>();
+    private Set<Book> books = new HashSet<>();          // todo comment equals and hashcode dashte bashad
 }

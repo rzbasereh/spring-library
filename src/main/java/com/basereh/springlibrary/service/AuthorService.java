@@ -32,7 +32,7 @@ public class AuthorService {
                     .lastname(author.getLastname())
                     .build());
         }
-        return null;
+        return null;        // todo comment chera null?
     }
 
     public void deleteAuthor(Long id) {
