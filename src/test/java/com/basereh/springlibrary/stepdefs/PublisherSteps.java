@@ -1,84 +1,75 @@
 package com.basereh.springlibrary.stepdefs;
 
 import com.basereh.springlibrary.controller.dto.PublisherDto;
-import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.boot.test.web.server.LocalServerPort;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PublisherSteps {
-    @LocalServerPort
-    private int port;
+    private final Map<String, PublisherDto> publishers = new HashMap<>();
 
-    private Map<String, PublisherDto> publishers;
-
-    @Before
-    public void setup() {
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = port;
-        publishers = new HashMap<>();
-    }
-
-    @When("user create {string} with name {string}")
+    @When("user adds {string} with name={string}")
     public void user_create_publisher_with_name_(String paramName, String pubName) {
-        RequestSpecification request = getJsonRequest();
-        JSONObject requestParams = new JSONObject();
-        try {
-            requestParams.put("name", pubName);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        request.body(requestParams.toString());
+        RequestSpecification request = getJsonRequest(PublisherDto.builder().name(pubName).build());
+
         publishers.put(paramName, request.post("/publishers").then().extract().as(PublisherDto.class));
     }
 
-    @When("user change {string} name to {string}")
+    @When("user updates {string} to name={string}")
     public void user_update_publisher_name_to_(String paramName, String newPubName) {
-        RequestSpecification request = getJsonRequest();
-        JSONObject requestParams = new JSONObject();
-        PublisherDto curPublisher = publishers.get(paramName);
-        try {
-            requestParams.put("id", curPublisher.getId());
-            requestParams.put("name", newPubName);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        request.body(requestParams.toString());
-        publishers.put(paramName, request.put("/publishers/" + curPublisher.getId())
-                .then()
-                .extract()
-                .as(PublisherDto.class));
+        PublisherDto currPublisher = publishers.get(paramName);
+        PublisherDto updatedPublisher = PublisherDto.builder().id(currPublisher.getId()).name(newPubName).build();
+        RequestSpecification request = getJsonRequest(updatedPublisher);
+
+        request.put("/publishers/" + currPublisher.getId());
+        publishers.put(paramName, PublisherDto.builder().id(currPublisher.getId()).name(newPubName).build());
     }
 
-    @When("user delete {string}")
+    @When("user deletes {string}")
     public void user_delete_(String paramName) {
         RequestSpecification request = getJsonRequest();
-        PublisherDto curPublisher = publishers.get(paramName);
-        request.delete("/publishers/" + curPublisher.getId());
+        request.delete("/publishers/" + publishers.get(paramName).getId());
     }
 
-    @Then("{string} is exist")
-    public void publisher_is_exist(String paramName) {
-        assertTrue(publishers.containsKey(paramName));
+    @Then("the {string} is exist with desired properties")
+    public void publisher_exists(String paramName) {
+        PublisherDto expectedPublisher = publishers.get(paramName);
+        PublisherDto actualPublisher = getJsonRequest().get("/publishers/" + expectedPublisher.getId())
+                .then().extract().as(PublisherDto.class);
+
+        assertThat(expectedPublisher).usingRecursiveComparison().withStrictTypeChecking().isEqualTo(actualPublisher);
     }
 
-    @Then("name of {string} is {string}")
-    public void name_of_publisher_is_(String paramName, String expectedPubName) {
-        String actualPubName = publishers.get(paramName).getName();
-        assertEquals(expectedPubName, actualPubName);
+    @Then("the {string} is deleted from system")
+    public void the_publisher_is_deleted_from_system(String paramName) {
+        Long pubId = publishers.get(paramName).getId();
+        Integer expectedStatusCode = getJsonRequest().get("/publishers/" + pubId).getStatusCode();
+
+        assertThat(404).isEqualTo(expectedStatusCode);
     }
 
     private RequestSpecification getJsonRequest() {
         return RestAssured.given().header("Content-Type", "application/json");
+    }
+
+    private RequestSpecification getJsonRequest(PublisherDto body) {
+        RequestSpecification request = getJsonRequest();
+        JSONObject requestParams = new JSONObject();
+        try {
+            requestParams.put("id", body.getId());
+            requestParams.put("name", body.getName());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        request.body(requestParams.toString());
+        return request;
     }
 }

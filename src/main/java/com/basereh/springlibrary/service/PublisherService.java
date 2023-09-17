@@ -6,7 +6,9 @@ import com.basereh.springlibrary.repository.PublisherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +19,8 @@ public class PublisherService {
         return publisherRepository.findAll();
     }
 
-    public Publisher getSinglePublisher(Long id) {
-        return publisherRepository.findById(id).orElse(null);
+    public Optional<Publisher> getSinglePublisher(Long id) {
+        return publisherRepository.findById(id);
     }
 
     public Publisher createPublisher(Publisher publisher) {
@@ -26,8 +28,8 @@ public class PublisherService {
     }
 
     public Publisher updatePublisher(Long id, Publisher publisher) {
-        Publisher prevPublisher = getSinglePublisher(id);
-        if (prevPublisher != null) {
+        Optional<Publisher> prevPublisher = getSinglePublisher(id);
+        if (prevPublisher.isPresent()) {
             return publisherRepository.save(publisher.toBuilder()
                     .name(publisher.getName())
                     .build());

@@ -2,11 +2,15 @@ package com.basereh.springlibrary.controller;
 
 import com.basereh.springlibrary.controller.dto.PublisherDto;
 import com.basereh.springlibrary.controller.mapper.PublisherMapper;
+import com.basereh.springlibrary.model.Publisher;
 import com.basereh.springlibrary.service.PublisherService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/publishers")
@@ -22,7 +26,11 @@ public class PublisherController {
 
     @GetMapping("/{id}")
     public PublisherDto getSinglePublisher(@PathVariable("id") Long id) {
-        return publisherMapper.toDto(publisherService.getSinglePublisher(id));
+        Optional<Publisher> publisher = publisherService.getSinglePublisher(id);
+        if (publisher.isPresent()) {
+            return publisherMapper.toDto(publisher.get());
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping
