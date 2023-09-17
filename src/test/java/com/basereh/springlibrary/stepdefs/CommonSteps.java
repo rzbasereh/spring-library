@@ -4,7 +4,7 @@ import com.basereh.springlibrary.repository.AuthorRepository;
 import com.basereh.springlibrary.repository.BookRepository;
 import com.basereh.springlibrary.repository.PublisherRepository;
 import io.cucumber.java.Before;
-import io.cucumber.java.en.When;
+import io.cucumber.java.en.Given;
 import io.restassured.RestAssured;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -24,7 +24,7 @@ public class CommonSteps {
         RestAssured.port = port;
     }
 
-    @When("clear database")
+    @Given("clear database")
     public void clear_database() {
         publisherRepository.deleteAll();
         authorRepository.deleteAll();
