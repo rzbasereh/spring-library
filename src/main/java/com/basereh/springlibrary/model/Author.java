@@ -6,11 +6,12 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity     // todo comment entity va table kenare ham bashand
+
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "author")
 public class Author {       // todo comment serializable
     @Id

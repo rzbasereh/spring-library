@@ -10,9 +10,9 @@ import java.util.Set;
 
 @Getter
 @Builder(toBuilder = true)
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "book")
 public class Book {
     @Id
