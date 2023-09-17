@@ -19,8 +19,8 @@ Feature: Test CRUD methods in Publisher REST API
     
   Scenario: Update a publisher
   	When sending "PUT" to "/publishers/1" with
-  	  | id | name |
-  	  | 1  | pub2 |
+      | id | name |
+      | 1  | pub2 |
     Then the HTTP status code should be 200
     And the HTTP response body should be
       | id | name |

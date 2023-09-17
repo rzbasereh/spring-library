@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/features", extraGlue = "com.basereh.springlibrary")
+@CucumberOptions(features = "src/test/resources/feature", extraGlue = "com.basereh.springlibrary")
 @DataJpaTest
 class LibraryCucumberIntegrationTest {
 }
