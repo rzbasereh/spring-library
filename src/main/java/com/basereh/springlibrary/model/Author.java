@@ -11,6 +11,7 @@ import java.util.Set;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Entity
 @Table(name = "author")
 public class Author {       // todo comment serializable
@@ -25,5 +26,5 @@ public class Author {       // todo comment serializable
     private String lastname;
 
     @ManyToMany(mappedBy = "authors")
-    private Set<Book> books = new HashSet<>();          // todo comment equals and hashcode dashte bashad
+    private Set<Book> books = new HashSet<>();
 }
