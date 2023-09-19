@@ -1,12 +1,9 @@
 package com.basereh.springlibrary.util;
 
-import io.cucumber.spring.ScenarioScope;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ScenarioScope
 public class ScenarioData {
     private final Map<String, Object> data = new HashMap<>();
 
@@ -14,11 +11,18 @@ public class ScenarioData {
         data.put(key, value);
     }
 
-    public Object get(String key) {
-        return data.get(key);
+    public <T> T get(String key) {
+        return (T) data.get(key);
     }
 
-    public List<Object> getAll() {
-        return data.values().stream().toList();
+    public <T> List<T> getAll() {
+        return (List<T>) data.values().stream().toList();
+    }
+
+    public <T> List<T> getAll(Class<T> type) {
+        return data.values().stream()
+                .filter(o -> type.isAssignableFrom(o.getClass()))
+                .map(o -> (T) o)
+                .toList();
     }
 }

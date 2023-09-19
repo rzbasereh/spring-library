@@ -1,10 +1,8 @@
 package com.basereh.springlibrary.util;
 
-import io.cucumber.spring.ScenarioScope;
 import lombok.Getter;
 
 @Getter
-@ScenarioScope
 public class ScenarioException {
     private ExceptionData exception;
 

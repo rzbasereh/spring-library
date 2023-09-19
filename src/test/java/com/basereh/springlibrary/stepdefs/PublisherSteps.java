@@ -31,8 +31,7 @@ public class PublisherSteps {
     public void user_adds_publisher_with_name_(String paramName, String pubName) {
         MockHttpServletResponse response = restApiUtil.postRequest(
                 "/publishers",
-                getRequestBody(PublisherDto.builder().name(pubName).build())
-        ).getResponse();
+                getRequestBody(PublisherDto.builder().name(pubName).build())).getResponse();
         scenarioData.add(paramName, mapResponseToDto(response));
     }
 
@@ -69,9 +68,9 @@ public class PublisherSteps {
 
     @Then("the {string} publisher is exist with desired properties")
     public void the_publisher_is_exist_with_desired_properties(String paramName) {
-        PublisherDto expectedPublisher = (PublisherDto) scenarioData.get(paramName);
-        PublisherDto actualPublisher = mapResponseToDto(restApiUtil
-                .getRequest("/publishers/" + expectedPublisher.getId()).getResponse());
+        PublisherDto expectedPublisher = scenarioData.get(paramName);
+        PublisherDto actualPublisher = mapResponseToDto(
+                restApiUtil.getRequest("/publishers/" + expectedPublisher.getId()).getResponse());
 
         assertThat(expectedPublisher).usingRecursiveComparison().withStrictTypeChecking().isEqualTo(actualPublisher);
     }
@@ -85,11 +84,8 @@ public class PublisherSteps {
 
     @Then("all {string} publishers are exist as expected")
     public void all_publishers_are_exist_as_expected(String paramName) {
-        List<PublisherDto> actual = (List<PublisherDto>) scenarioData.get(paramName);
-        List<PublisherDto> expected = scenarioData.getAll().stream()
-                .filter(o -> PublisherDto.class.isAssignableFrom(o.getClass()))
-                .map(o -> (PublisherDto) o)
-                .toList();
+        List<PublisherDto> actual = scenarioData.get(paramName);
+        List<PublisherDto> expected = scenarioData.getAll(PublisherDto.class);
         assertThat(actual).hasSameElementsAs(expected);
     }
 

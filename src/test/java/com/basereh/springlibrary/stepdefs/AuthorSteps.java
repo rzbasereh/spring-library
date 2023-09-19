@@ -73,7 +73,7 @@ public class AuthorSteps {
 
     @Then("the {string} author is exist with desired properties")
     public void the_author_is_exist_with_desired_properties(String paramName) {
-        AuthorDto expectedPublisher = (AuthorDto) scenarioData.get(paramName);
+        AuthorDto expectedPublisher = scenarioData.get(paramName);
         AuthorDto actualPublisher = mapResponseToDto(restApiUtil
                 .getRequest("/authors/" + expectedPublisher.getId()).getResponse());
 
@@ -89,7 +89,7 @@ public class AuthorSteps {
 
     @Then("all the {string} authors are exist as expected")
     public void all_authors_are_exist_as_expected(String paramName) {
-        List<AuthorDto> actual = (List<AuthorDto>) scenarioData.get(paramName);
+        List<AuthorDto> actual = scenarioData.get(paramName);
         List<AuthorDto> expected = scenarioData.getAll().stream()
                 .filter(o -> AuthorDto.class.isAssignableFrom(o.getClass()))
                 .map(o -> (AuthorDto) o)

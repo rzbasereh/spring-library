@@ -19,9 +19,9 @@ public class CommonSteps {
 
     @Given("clear database")
     public void clear_database() {
-        publisherRepository.deleteAll();
-        authorRepository.deleteAll();
         bookRepository.deleteAll();
+        authorRepository.deleteAll();
+        publisherRepository.deleteAll();
     }
 
     @Then("user gets an error with status={int}")
