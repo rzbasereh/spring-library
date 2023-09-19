@@ -1,64 +1,77 @@
 package com.basereh.springlibrary.stepdefs;
 
 import com.basereh.springlibrary.controller.dto.PublisherDto;
-import io.cucumber.java.Before;
+import com.basereh.springlibrary.util.RestApiUtil;
+import com.basereh.springlibrary.util.ScenarioData;
+import com.basereh.springlibrary.util.ScenarioException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.specification.RequestSpecification;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.HashMap;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RequiredArgsConstructor
 public class PublisherSteps {
-    private final Map<String, Object> scenarioData =new HashMap<>();
-
-    @Before
-    public void cleanup() {
-        scenarioData.clear();
-    }
+    private final ScenarioData scenarioData;
+    private final ScenarioException scenarioException;
+    private final RestApiUtil restApiUtil;
+    private final ObjectMapper objectMapper;
 
     @When("user adds {string} with name={string}")
     public void user_adds_publisher_with_name_(String paramName, String pubName) {
-        RequestSpecification request = getJsonRequest(PublisherDto.builder().name(pubName).build());
-
-        scenarioData.put(paramName, request.post("/publishers").as(PublisherDto.class));
+        MockHttpServletResponse response = restApiUtil.postRequest(
+                "/publishers",
+                getRequestBody(PublisherDto.builder().name(pubName).build())
+        ).getResponse();
+        scenarioData.add(paramName, mapResponseToDto(response));
     }
 
     @When("user gets all publishers with {string} result")
     public void user_gets_all_publishers_with_(String paramName) {
-        List<PublisherDto> allPublishers = getJsonRequest().get("/publishers").as(new TypeRef<>() {
-        });
-        scenarioData.put(paramName, allPublishers);
+        List<PublisherDto> allPublishers = mapResponseToDtoList(restApiUtil.getRequest("/publishers").getResponse());
+        scenarioData.add(paramName, allPublishers);
+    }
+
+    @When("user gets {string} publisher")
+    public void user_gets_publisher(String paramName) {
+        Long id = ((PublisherDto) scenarioData.get(paramName)).getId();
+        MvcResult mvcResult = restApiUtil.getRequest("/publishers/" + id);
+        if (mvcResult.getResolvedException() == null) {
+            scenarioData.add(paramName, mapResponseToDto(mvcResult.getResponse()));
+        } else {
+            scenarioException.setException(mvcResult.getResolvedException(), mvcResult.getResponse().getStatus());
+        }
     }
 
     @When("user updates {string} to name={string}")
     public void user_updates_publisher_to_(String paramName, String newPubName) {
-        PublisherDto currPublisher = (PublisherDto) scenarioData.get(paramName);
-        PublisherDto updatedPublisher = PublisherDto.builder().id(currPublisher.getId()).name(newPubName).build();
-        RequestSpecification request = getJsonRequest(updatedPublisher);
+        Long currPublisherId = ((PublisherDto) scenarioData.get(paramName)).getId();
+        PublisherDto updatedPublisher = PublisherDto.builder().id(currPublisherId).name(newPubName).build();
 
-        request.put("/publishers/" + currPublisher.getId());
-        scenarioData.put(paramName, PublisherDto.builder().id(currPublisher.getId()).name(newPubName).build());
+        restApiUtil.putRequest("/publishers/" + currPublisherId, getRequestBody(updatedPublisher));
+        scenarioData.add(paramName, updatedPublisher);
     }
 
     @When("user deletes {string}")
     public void user_deletes_(String paramName) {
-        RequestSpecification request = getJsonRequest();
-        request.delete("/publishers/" + ((PublisherDto) scenarioData.get(paramName)).getId());
+        restApiUtil.deleteRequest("/publishers/" + ((PublisherDto) scenarioData.get(paramName)).getId());
     }
 
     @Then("the {string} is exist with desired properties")
     public void the_publisher_is_exist_with_desired_properties(String paramName) {
         PublisherDto expectedPublisher = (PublisherDto) scenarioData.get(paramName);
-        PublisherDto actualPublisher = getJsonRequest()
-                .get("/publishers/" + expectedPublisher.getId()).as(PublisherDto.class);
+        PublisherDto actualPublisher = mapResponseToDto(restApiUtil
+                .getRequest("/publishers/" + expectedPublisher.getId()).getResponse());
 
         assertThat(expectedPublisher).usingRecursiveComparison().withStrictTypeChecking().isEqualTo(actualPublisher);
     }
@@ -66,35 +79,45 @@ public class PublisherSteps {
     @Then("the {string} is deleted from system")
     public void the_publisher_is_deleted_from_system(String paramName) {
         Long pubId = ((PublisherDto) scenarioData.get(paramName)).getId();
-        Integer expectedStatusCode = getJsonRequest().get("/publishers/" + pubId).getStatusCode();
-
+        Integer expectedStatusCode = restApiUtil.getRequest("/publishers/" + pubId).getResponse().getStatus();
         assertThat(404).isEqualTo(expectedStatusCode);
     }
 
     @Then("all {string} publishers are exist as expected")
     public void all_publishers_are_exist_as_expected(String paramName) {
         List<PublisherDto> actual = (List<PublisherDto>) scenarioData.get(paramName);
-        List<PublisherDto> expected = scenarioData.entrySet().stream()
-                .filter(entry -> PublisherDto.class.isAssignableFrom(entry.getValue().getClass()))
-                .map(entry -> (PublisherDto) entry.getValue())
+        List<PublisherDto> expected = scenarioData.getAll().stream()
+                .filter(o -> PublisherDto.class.isAssignableFrom(o.getClass()))
+                .map(o -> (PublisherDto) o)
                 .toList();
         assertThat(actual).hasSameElementsAs(expected);
     }
 
-    private RequestSpecification getJsonRequest() {
-        return RestAssured.given().header("Content-Type", "application/json");
+    private PublisherDto mapResponseToDto(MockHttpServletResponse response) {
+        try {
+            return objectMapper.readValue(response.getContentAsString(), PublisherDto.class);
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private RequestSpecification getJsonRequest(PublisherDto body) {
-        RequestSpecification request = getJsonRequest();
+    private List<PublisherDto> mapResponseToDtoList(MockHttpServletResponse response) {
+        try {
+            return objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+            });
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private JSONObject getRequestBody(PublisherDto body) {
         JSONObject requestParams = new JSONObject();
         try {
             requestParams.put("id", body.getId());
             requestParams.put("name", body.getName());
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        request.body(requestParams.toString());
-        return request;
+        return requestParams;
     }
 }

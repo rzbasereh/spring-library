@@ -3,31 +3,30 @@ package com.basereh.springlibrary.stepdefs;
 import com.basereh.springlibrary.repository.AuthorRepository;
 import com.basereh.springlibrary.repository.BookRepository;
 import com.basereh.springlibrary.repository.PublisherRepository;
-import io.cucumber.java.Before;
+import com.basereh.springlibrary.util.ScenarioException;
 import io.cucumber.java.en.Given;
-import io.restassured.RestAssured;
+import io.cucumber.java.en.Then;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.test.web.server.LocalServerPort;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @RequiredArgsConstructor
 public class CommonSteps {
     private final PublisherRepository publisherRepository;
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
-
-    @LocalServerPort
-    private Integer port;
-
-    @Before
-    public void setup() {
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = port;
-    }
+    private final ScenarioException scenarioException;
 
     @Given("clear database")
     public void clear_database() {
         publisherRepository.deleteAll();
         authorRepository.deleteAll();
         bookRepository.deleteAll();
+    }
+
+    @Then("user gets an error with status={int}")
+    public void user_gets_an_error_with_status_(Integer expectedStatus) {
+        Integer actualStatus = scenarioException.getException().getStatus();
+        assertThat(actualStatus).isEqualTo(expectedStatus);
     }
 }
