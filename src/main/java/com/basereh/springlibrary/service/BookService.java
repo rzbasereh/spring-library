@@ -2,6 +2,7 @@ package com.basereh.springlibrary.service;
 
 import com.basereh.springlibrary.model.Book;
 import com.basereh.springlibrary.repository.BookRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ public class BookService {
     }
 
     public Book getBook(Long id) {
-        return bookRepository.findById(id).orElse(null);
+        return bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("book not found"));
     }
 
     public Book createBook(Book book) {
@@ -26,14 +27,11 @@ public class BookService {
 
     public Book updateBook(Long id, Book book) {
         Book prevBook = getBook(id);
-        if (prevBook != null) {
-            bookRepository.save(prevBook.toBuilder()
-                    .name(book.getName())
-                    .authors(book.getAuthors())
-                    .publisher(book.getPublisher())
-                    .build());
-        }
-        return null;
+        return bookRepository.save(prevBook.toBuilder()
+                .name(book.getName())
+                .authors(book.getAuthors())
+                .publisher(book.getPublisher())
+                .build());
     }
 
     public void deleteBook(Long id) {

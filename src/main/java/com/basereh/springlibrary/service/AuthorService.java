@@ -2,6 +2,7 @@ package com.basereh.springlibrary.service;
 
 import com.basereh.springlibrary.model.Author;
 import com.basereh.springlibrary.repository.AuthorRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ public class AuthorService {
     }
 
     public Author getSingleAuthor(Long id) {
-        return authorRepository.findById(id).orElse(null);
+        return authorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("author not found."));
     }
 
     public Author createAuthor(Author author) {
@@ -26,13 +27,10 @@ public class AuthorService {
 
     public Author updateAuthor(Long id, Author author) {
         Author prevAuthor = getSingleAuthor(id);
-        if (prevAuthor != null) {
-            return authorRepository.save(prevAuthor.toBuilder()
-                    .firstname(author.getFirstname())
-                    .lastname(author.getLastname())
-                    .build());
-        }
-        return null;        // todo comment chera null?
+        return authorRepository.save(prevAuthor.toBuilder()
+                .firstname(author.getFirstname())
+                .lastname(author.getLastname())
+                .build());
     }
 
     public void deleteAuthor(Long id) {

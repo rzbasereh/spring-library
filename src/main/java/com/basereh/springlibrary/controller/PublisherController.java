@@ -26,11 +26,7 @@ public class PublisherController {
 
     @GetMapping("/{id}")
     public PublisherDto getSinglePublisher(@PathVariable("id") Long id) {
-        Optional<Publisher> publisher = publisherService.getSinglePublisher(id);
-        if (publisher.isPresent()) {
-            return publisherMapper.toDto(publisher.get());
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return publisherMapper.toDto(publisherService.getSinglePublisher(id));
     }
 
     @PostMapping

@@ -14,7 +14,7 @@ import java.util.Set;
 @EqualsAndHashCode
 @Entity
 @Table(name = "author")
-public class Author {       // todo comment serializable
+public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
