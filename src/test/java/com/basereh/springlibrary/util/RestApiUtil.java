@@ -52,9 +52,9 @@ public class RestApiUtil {
         }
     }
 
-    public MvcResult deleteRequest(String path) {
+    public void deleteRequest(String path) {
         try {
-            return mockMvc.perform(
+            mockMvc.perform(
                     delete(path)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)

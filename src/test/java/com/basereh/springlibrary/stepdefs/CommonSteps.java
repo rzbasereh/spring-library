@@ -26,7 +26,7 @@ public class CommonSteps {
 
     @Then("user gets an error with status={int}")
     public void user_gets_an_error_with_status_(Integer expectedStatus) {
-        Integer actualStatus = scenarioException.getException().getStatus();
+        Integer actualStatus = scenarioException.getException().status();
         assertThat(actualStatus).isEqualTo(expectedStatus);
     }
 }
