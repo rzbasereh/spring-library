@@ -62,8 +62,12 @@ public class AuthorSteps {
                 .lastname(newLastname)
                 .build();
 
-        restApiUtil.putRequest("/authors/" + currAuthorId, getRequestBody(updatedAuthor));
-        scenarioData.add(paramName, updatedAuthor);
+        MvcResult mvcResult = restApiUtil.putRequest("/authors/" + currAuthorId, getRequestBody(updatedAuthor));
+        if (mvcResult.getResolvedException() == null) {
+            scenarioData.add(paramName, mapResponseToDto(mvcResult.getResponse()));
+        } else {
+            scenarioException.setException(mvcResult.getResolvedException(), mvcResult.getResponse().getStatus());
+        }
     }
 
     @When("user deletes the {string} author")

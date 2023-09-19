@@ -98,8 +98,12 @@ public class BookSteps {
                 .authors(newAuthors)
                 .build();
 
-        restApiUtil.putRequest("/books/" + currBook.getId(), getRequestBody(updatedBook));
-        scenarioData.add(paramName, updatedBook);
+        MvcResult mvcResult = restApiUtil.putRequest("/books/" + currBook.getId(), getRequestBody(updatedBook));
+        if (mvcResult.getResolvedException() == null) {
+            scenarioData.add(paramName, mapResponseToDto(mvcResult.getResponse()));
+        } else {
+            scenarioException.setException(mvcResult.getResolvedException(), mvcResult.getResponse().getStatus());
+        }
     }
 
     @When("user deletes the {string} book")

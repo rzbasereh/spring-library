@@ -57,8 +57,12 @@ public class PublisherSteps {
         Long currPublisherId = ((PublisherDto) scenarioData.get(paramName)).getId();
         PublisherDto updatedPublisher = PublisherDto.builder().id(currPublisherId).name(newPubName).build();
 
-        restApiUtil.putRequest("/publishers/" + currPublisherId, getRequestBody(updatedPublisher));
-        scenarioData.add(paramName, updatedPublisher);
+        MvcResult mvcResult = restApiUtil.putRequest("/publishers/" + currPublisherId, getRequestBody(updatedPublisher));
+        if (mvcResult.getResolvedException() == null) {
+            scenarioData.add(paramName, mapResponseToDto(mvcResult.getResponse()));
+        } else {
+            scenarioException.setException(mvcResult.getResolvedException(), mvcResult.getResponse().getStatus());
+        }
     }
 
     @When("user deletes the {string} publisher")
