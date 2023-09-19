@@ -4,8 +4,7 @@ import lombok.*;
 
 @Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@EqualsAndHashCode
 public class AuthorDto {
     private Long id;
     private String firstname;

@@ -27,7 +27,7 @@ public class PublisherSteps {
     private final RestApiUtil restApiUtil;
     private final ObjectMapper objectMapper;
 
-    @When("user adds {string} with name={string}")
+    @When("user adds the {string} publisher with name={string}")
     public void user_adds_publisher_with_name_(String paramName, String pubName) {
         MockHttpServletResponse response = restApiUtil.postRequest(
                 "/publishers",
@@ -53,7 +53,7 @@ public class PublisherSteps {
         }
     }
 
-    @When("user updates {string} to name={string}")
+    @When("user updates the {string} publisher to name={string}")
     public void user_updates_publisher_to_(String paramName, String newPubName) {
         Long currPublisherId = ((PublisherDto) scenarioData.get(paramName)).getId();
         PublisherDto updatedPublisher = PublisherDto.builder().id(currPublisherId).name(newPubName).build();
@@ -62,12 +62,12 @@ public class PublisherSteps {
         scenarioData.add(paramName, updatedPublisher);
     }
 
-    @When("user deletes {string}")
+    @When("user deletes the {string} publisher")
     public void user_deletes_(String paramName) {
         restApiUtil.deleteRequest("/publishers/" + ((PublisherDto) scenarioData.get(paramName)).getId());
     }
 
-    @Then("the {string} is exist with desired properties")
+    @Then("the {string} publisher is exist with desired properties")
     public void the_publisher_is_exist_with_desired_properties(String paramName) {
         PublisherDto expectedPublisher = (PublisherDto) scenarioData.get(paramName);
         PublisherDto actualPublisher = mapResponseToDto(restApiUtil
@@ -76,7 +76,7 @@ public class PublisherSteps {
         assertThat(expectedPublisher).usingRecursiveComparison().withStrictTypeChecking().isEqualTo(actualPublisher);
     }
 
-    @Then("the {string} is deleted from system")
+    @Then("the {string} publisher is deleted from system")
     public void the_publisher_is_deleted_from_system(String paramName) {
         Long pubId = ((PublisherDto) scenarioData.get(paramName)).getId();
         Integer expectedStatusCode = restApiUtil.getRequest("/publishers/" + pubId).getResponse().getStatus();
