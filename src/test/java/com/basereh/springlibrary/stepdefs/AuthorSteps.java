@@ -87,11 +87,11 @@ public class AuthorSteps {
     @Then("the {string} author is deleted from system")
     public void the_publisher_is_deleted_from_system(String paramName) {
         Long pubId = ((AuthorDto) scenarioData.get(paramName)).getId();
-        Integer expectedStatusCode = restApiUtil.getRequest("/authors/" + pubId).getResponse().getStatus();
+        Integer expectedStatusCode = restApiUtil.getRequest("/authors/" + pubId).getResponse().getStatus();     // todo comment expected hast mage?
         assertThat(404).isEqualTo(expectedStatusCode);
     }
 
-    @Then("all the {string} authors are exist as expected")
+    @Then("all the {string} authors are exist as expected")     // todo comment exist
     public void all_authors_are_exist_as_expected(String paramName) {
         List<AuthorDto> actual = scenarioData.get(paramName);
         List<AuthorDto> expected = scenarioData.getAll().stream()
@@ -125,7 +125,7 @@ public class AuthorSteps {
             requestParams.put("firstname", body.getFirstname());
             requestParams.put("lastname", body.getLastname());
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e);          // todo comment too test zaroorati nadare shayad bekhay wrap koni
         }
         return requestParams;
     }
