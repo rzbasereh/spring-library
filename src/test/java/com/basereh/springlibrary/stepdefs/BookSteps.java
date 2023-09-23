@@ -112,22 +112,33 @@ public class BookSteps {
         restApiUtil.deleteRequest("/books/" + book.getId());
     }
 
-    @Then("the {string} book is exist with desired properties")
-    public void the_book_is_exist_with_desired_properties(String paramName) {
+    @Then("the {string} book exists with name={string}, publisher={string}, authors={listOfStrings}")
+    public void the_book_is_exist_with_desired_properties(
+            String paramName,
+            String expectedName,
+            String expectedPublisherParamName,
+            List<String> expectedAuthorParamNames
+    ) {
         BookDto expected = scenarioData.get(paramName);
+        PublisherDto expectedPublisher = scenarioData.get(expectedPublisherParamName);
+        List<AuthorDto> expectedAuthors = expectedAuthorParamNames.stream()
+                .map(name -> (AuthorDto) scenarioData.get(name))
+                .toList();
         BookDto actual = mapResponseToDto(restApiUtil.getRequest("/books/" + expected.getId()).getResponse());
 
-        assertThat(expected).usingRecursiveComparison().withStrictTypeChecking().isEqualTo(actual);
+        assertThat(actual.getName()).isEqualTo(expectedName);
+        assertThat(actual.getPublisher()).isEqualTo(expectedPublisher);
+        assertThat(actual.getAuthors()).hasSameElementsAs(expectedAuthors);
     }
 
-    @Then("the {string} book is deleted from system")
+    @Then("the {string} book does not exist")
     public void the_book_is_deleted_from_system(String paramName) {
         BookDto book = scenarioData.get(paramName);
-        Integer expectedStatusCode = restApiUtil.getRequest("/books/" + book.getId()).getResponse().getStatus();
-        assertThat(404).isEqualTo(expectedStatusCode);
+        Integer actualStatusCode = restApiUtil.getRequest("/books/" + book.getId()).getResponse().getStatus();
+        assertThat(404).isEqualTo(actualStatusCode);
     }
 
-    @Then("all the {string} books are exist as expected")
+    @Then("all the {string} books exist as expected")
     public void all_books_are_exist_as_expected(String paramName) {
         List<BookDto> actual = scenarioData.get(paramName);
         List<BookDto> expected = scenarioData.getAll(BookDto.class);

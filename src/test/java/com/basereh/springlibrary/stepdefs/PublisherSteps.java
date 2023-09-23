@@ -70,23 +70,23 @@ public class PublisherSteps {
         restApiUtil.deleteRequest("/publishers/" + ((PublisherDto) scenarioData.get(paramName)).getId());
     }
 
-    @Then("the {string} publisher is exist with desired properties")
-    public void the_publisher_is_exist_with_desired_properties(String paramName) {
-        PublisherDto expectedPublisher = scenarioData.get(paramName);
+    @Then("the {string} publisher exists with name={string}")
+    public void the_publisher_is_exist_with_desired_properties(String paramName, String expectedName) {
+        PublisherDto publisher = scenarioData.get(paramName);
         PublisherDto actualPublisher = mapResponseToDto(
-                restApiUtil.getRequest("/publishers/" + expectedPublisher.getId()).getResponse());
+                restApiUtil.getRequest("/publishers/" + publisher.getId()).getResponse());
 
-        assertThat(expectedPublisher).usingRecursiveComparison().withStrictTypeChecking().isEqualTo(actualPublisher);
+        assertThat(actualPublisher.getName()).isEqualTo(expectedName);
     }
 
-    @Then("the {string} publisher is deleted from system")
+    @Then("the {string} publisher does not exist")
     public void the_publisher_is_deleted_from_system(String paramName) {
         Long pubId = ((PublisherDto) scenarioData.get(paramName)).getId();
-        Integer expectedStatusCode = restApiUtil.getRequest("/publishers/" + pubId).getResponse().getStatus();
-        assertThat(404).isEqualTo(expectedStatusCode);
+        Integer actualStatusCode = restApiUtil.getRequest("/publishers/" + pubId).getResponse().getStatus();
+        assertThat(404).isEqualTo(actualStatusCode);
     }
 
-    @Then("all {string} publishers are exist as expected")
+    @Then("all {string} publishers exist as expected")
     public void all_publishers_are_exist_as_expected(String paramName) {
         List<PublisherDto> actual = scenarioData.get(paramName);
         List<PublisherDto> expected = scenarioData.getAll(PublisherDto.class);

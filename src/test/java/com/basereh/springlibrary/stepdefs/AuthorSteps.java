@@ -75,23 +75,28 @@ public class AuthorSteps {
         restApiUtil.deleteRequest("/authors/" + ((AuthorDto) scenarioData.get(paramName)).getId());
     }
 
-    @Then("the {string} author is exist with desired properties")
-    public void the_author_is_exist_with_desired_properties(String paramName) {
-        AuthorDto expectedPublisher = scenarioData.get(paramName);
+    @Then("the {string} author exists with firstname={string}, lastname={string}")
+    public void the_author_is_exist_with_desired_properties(
+            String paramName,
+            String expectedFirstname,
+            String expectedLastname
+    ) {
+        AuthorDto publisher = scenarioData.get(paramName);
         AuthorDto actualPublisher = mapResponseToDto(restApiUtil
-                .getRequest("/authors/" + expectedPublisher.getId()).getResponse());
+                .getRequest("/authors/" + publisher.getId()).getResponse());
 
-        assertThat(expectedPublisher).usingRecursiveComparison().withStrictTypeChecking().isEqualTo(actualPublisher);
+        assertThat(actualPublisher.getFirstname()).isEqualTo(expectedFirstname);
+        assertThat(actualPublisher.getLastname()).isEqualTo(expectedLastname);
     }
 
-    @Then("the {string} author is deleted from system")
+    @Then("the {string} author does not exist")
     public void the_publisher_is_deleted_from_system(String paramName) {
         Long pubId = ((AuthorDto) scenarioData.get(paramName)).getId();
-        Integer expectedStatusCode = restApiUtil.getRequest("/authors/" + pubId).getResponse().getStatus();     // todo comment expected hast mage?
-        assertThat(404).isEqualTo(expectedStatusCode);
+        Integer actualStatusCode = restApiUtil.getRequest("/authors/" + pubId).getResponse().getStatus();
+        assertThat(404).isEqualTo(actualStatusCode);
     }
 
-    @Then("all the {string} authors are exist as expected")     // todo comment exist
+    @Then("all the {string} authors exist as expected")
     public void all_authors_are_exist_as_expected(String paramName) {
         List<AuthorDto> actual = scenarioData.get(paramName);
         List<AuthorDto> expected = scenarioData.getAll().stream()
@@ -125,7 +130,7 @@ public class AuthorSteps {
             requestParams.put("firstname", body.getFirstname());
             requestParams.put("lastname", body.getLastname());
         } catch (JSONException e) {
-            throw new RuntimeException(e);          // todo comment too test zaroorati nadare shayad bekhay wrap koni
+            throw new RuntimeException(e);
         }
         return requestParams;
     }

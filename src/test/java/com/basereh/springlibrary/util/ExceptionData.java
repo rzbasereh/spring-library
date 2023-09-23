@@ -7,5 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @Builder
 @RequiredArgsConstructor
-public record ExceptionData(Exception content, Integer status) {
+public class ExceptionData {
+     final private Exception content;
+     final private Integer status;
 }
